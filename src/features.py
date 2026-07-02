@@ -43,16 +43,15 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
         (df["high"] - df["close"].shift(1)).abs(),
         (df["low"]  - df["close"].shift(1)).abs(),
     ], axis=1).max(axis=1)
-    df["atr"] = tr.rolling(ATR_WINDOW).mean()
+    df["atr"] = tr.shift(1).rolling(ATR_WINDOW).mean()
     df["atr_norm"] = df["atr"] / df["close"]   # as fraction of price
 
     # ── volume features ────────────────────────────────────────────────
     for w in WINDOWS:
-        df[f"vol_ma_{w}"]     = df["volume"].rolling(w).mean()
+        df[f"vol_ma_{w}"]     = df["volume"].shift(1).rolling(w).mean()
         df[f"rel_vol_{w}"]    = df["volume"] / df[f"vol_ma_{w}"]
-        df[f"close_ma_{w}"]   = df["close"].rolling(w).mean()
-        df[f"return_std_{w}"] = df["log_return_1d"].rolling(w).std()
-        # return z-score: how many std devs is today's return vs. recent window
+        df[f"close_ma_{w}"]   = df["close"].shift(1).rolling(w).mean()
+        df[f"return_std_{w}"] = df["log_return_1d"].shift(1).rolling(w).std()
         df[f"return_z_{w}"]   = df["log_return_1d"] / (df[f"return_std_{w}"] + 1e-8)
 
     # ── price-volume divergence ────────────────────────────────────────
