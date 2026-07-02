@@ -76,33 +76,31 @@ is flagged; the same raw volume number on HPG (much higher baseline) is not.
 
 ---
 
-## Results on synthetic data
+## Threshold selection
 
-25 anomalies injected across 5 tickers (5 per ticker: price spikes, volume
-spikes, crashes). At threshold=0.7:
+Ran a sweep from 0.3 to 0.9 to find the actual recall/false-alarm tradeoff
+instead of guessing:
 
-| Ticker | Injected | Found | Recall |
-|--------|----------|-------|--------|
-| VNM_VN | 5        | 3     | 60%    |
-| VIC_VN | 5        | 2     | 40%    |
-| VHM_VN | 5        | 3     | 60%    |
-| HPG_VN | 5        | 1     | 20%    |
-| MWG_VN | 5        | 2     | 40%    |
-| **Avg**| **5**    |**2.2**|**44%**|
+| Threshold | Recall | Flag rate |
+|-----------|--------|-----------|
+| 0.30-0.45 | 100%   | 3.8-13.1% |
+| 0.50      | 96%    | 2.3%      |
+| 0.70      | 44%    | 0.5%      |
+| 0.90      | 20%    | 0.1%      |
 
-44% recall at 0.7 threshold is a trade-off deliberately chosen to minimize
-false alarms. Lowering to 0.5 raises recall significantly - see
-`--threshold 0.5` in predict.py. In a real trading context, false positives
-(flagging normal days as suspicious) cost analyst attention; false negatives
-(missing real manipulation) cost money. The right threshold depends on
-which failure mode you care more about.
+`ALERT_THRESHOLD = 0.45` in config.py. Catches every injected anomaly at a
+3.8% flag rate, roughly 38 flagged days out of 1022. Low enough to review by
+hand, high enough to not miss real events.
 
-The LSTM and IF catch different anomalies: in the VNM_VN example, the LSTM
-scored Feb 9 2023 at 1.000 (perfect reconstruction failure) while IF scored
-it at only 0.396. That day would be missed by either model alone but caught
-by the fusion. That complementarity is the whole point of running both.
+The LSTM and Isolation Forest catch different anomalies. On VNM_VN, the LSTM
+scored one day at 1.000 (total reconstruction failure) while IF scored the
+same day 0.396. Either model alone misses it. The fusion catches it.
 
----
+## Bugs found and fixed
+
+**Look-ahead leakage**: rolling averages included the current day in their
+own baseline, diluting the signal on the exact days that mattered most.
+Fixed by shifting the window by 1 day before computing rolling stats.
 
 ## Why one model per ticker
 

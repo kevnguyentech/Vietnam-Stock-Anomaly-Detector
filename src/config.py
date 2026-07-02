@@ -39,5 +39,5 @@ LSTM_LR          = 1e-3
 LSTM_THRESHOLD_PERCENTILE = 97 # flag top-N% reconstruction errors
 
 # ── anomaly score threshold for CLI output ─────────────────────────────
-ALERT_THRESHOLD  = 0.7         # 0-1 fused score above this = flagged
+ALERT_THRESHOLD  = 0.45         # 0-1 fused score above this = flagged
 

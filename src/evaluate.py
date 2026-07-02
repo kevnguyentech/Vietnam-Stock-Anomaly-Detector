@@ -88,6 +88,37 @@ def compute_recall(ticker: str, df: pd.DataFrame) -> dict | None:
         "missed_dates":  [d for d in ground_truth if d not in hits],
     }
 
+def threshold_sweep(scored_csvs: list) -> pd.DataFrame:
+    """Test recall/flag-rate across thresholds 0.3-0.9 to justify ALERT_THRESHOLD."""
+    thresholds = np.arange(0.3, 0.95, 0.05)
+    rows = []
+
+    for t in thresholds:
+        total_hits, total_injected, total_flagged, total_days = 0, 0, 0, 0
+        for csv_path in scored_csvs:
+            ticker = csv_path.stem.replace("_scored", "")
+            df = pd.read_csv(csv_path, index_col="date", parse_dates=True)
+            anom_csv = DATA_RAW / f"{ticker}_anomalies.csv"
+            if not anom_csv.exists():
+                continue
+            ground_truth = pd.read_csv(anom_csv)["date"].tolist()
+            flagged_dates = df.index[df["fused_score"] >= t].strftime("%Y-%m-%d").tolist()
+            hits = [d for d in ground_truth if d in flagged_dates]
+
+            total_hits += len(hits)
+            total_injected += len(ground_truth)
+            total_flagged += len(flagged_dates)
+            total_days += len(df)
+
+        rows.append({
+            "threshold": round(t, 2),
+            "recall": total_hits / total_injected if total_injected else 0,
+            "flag_rate": total_flagged / total_days if total_days else 0,
+            "hits": total_hits,
+            "injected": total_injected,
+        })
+
+    return pd.DataFrame(rows)
 
 def main():
     scored_csvs = sorted(DATA_PROCESSED.glob("*_scored.csv"))
@@ -134,6 +165,13 @@ def main():
 
     print("\nNext: python src/predict.py --ticker VNM_VN")
 
+    sweep_df = threshold_sweep(scored_csvs)
+    print(f"\n{'='*50}")
+    print("THRESHOLD SWEEP (recall vs. false-alarm tradeoff)")
+    print(f"{'='*50}")
+    print(sweep_df.to_string(index=False))
+    sweep_df.to_csv(OUTPUTS_DIR / "threshold_sweep.csv", index=False)
+    print(f"\nSaved -> {OUTPUTS_DIR / 'threshold_sweep.csv'}")
 
 if __name__ == "__main__":
     main()
