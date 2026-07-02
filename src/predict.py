@@ -22,6 +22,8 @@ import numpy as np
 import pandas as pd
 import joblib
 import torch
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 from sklearn.preprocessing import StandardScaler
 
 from config import (
