@@ -54,6 +54,7 @@ def simulate_ohlcv(ticker: str, params: dict, dates: pd.DatetimeIndex,
 
     # Volume correlated with volatility (realistic)
     vol_multiplier = np.exp(3 * np.abs(returns) / sigma + rng.normal(0, 0.3, n))
+    vol_multiplier = np.clip(vol_multiplier, 0.2, 15)  # cap at 15x — no real trading day sees more
     volume = (avg_v * vol_multiplier).astype(int)
 
     # Inject known anomalies
