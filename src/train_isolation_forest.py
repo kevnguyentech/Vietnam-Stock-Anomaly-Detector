@@ -76,10 +76,10 @@ def train_ticker(ticker: str, df: pd.DataFrame) -> dict:
 
 
 def main():
-    csvs = list(DATA_PROCESSED.glob("*.csv"))
+    csvs = [f for f in DATA_PROCESSED.glob("*.csv") if "_scored" not in f.name]
     if not csvs:
         import sys; sys.exit("No processed CSVs. Run features.py first.")
-
+        
     print(f"Training Isolation Forest on {len(csvs)} tickers...")
     results = {}
 
