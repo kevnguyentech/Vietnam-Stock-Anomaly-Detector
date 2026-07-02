@@ -38,7 +38,19 @@ from train_lstm import LSTMAutoencoder
 def load_if_model(ticker: str):
     path = MODELS_DIR / f"if_{ticker}.pkl"
     if not path.exists():
-        sys.exit(f"No Isolation Forest model for {ticker}. Run train_isolation_forest.py.")
+        yf_ticker = ticker.replace("_", ".")
+        sys.exit(
+            f"No trained model for '{ticker}'.\n"
+            f"This tool trains one model per ticker on historical data first —\n"
+            f"it can't score a stock it's never seen.\n\n"
+            f"To fix:\n"
+            f"  1. Add '{ticker}' to fetch_data.py or run:\n"
+            f"     python fetch_data.py --tickers {yf_ticker}\n"
+            f"  2. python features.py\n"
+            f"  3. python train_isolation_forest.py\n"
+            f"  4. python train_lstm.py\n"
+            f"  5. Then: python predict.py --ticker {ticker} --live"
+        )
     return joblib.load(path)
 
 
