@@ -76,7 +76,9 @@ def score_dataframe(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
     scaler_if = if_bundle["scaler"]
     X_if      = scaler_if.transform(X_raw)
     raw_if    = if_bundle["model"].decision_function(X_if)
-    if_scores = 1 - (raw_if - raw_if.min()) / (np.ptp(raw_if) + 1e-8)
+    score_min = if_bundle["score_min"]
+    score_max = if_bundle["score_max"]
+    if_scores = 1 - (raw_if - score_min) / (score_max - score_min + 1e-8)
 
     # ── LSTM Autoencoder ──────────────────────────────────────────────
     if lstm_result:
@@ -97,7 +99,9 @@ def score_dataframe(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
             day_count[i: i + LSTM_SEQ_LEN] += 1
         day_count = np.maximum(day_count, 1)
         day_err  /= day_count
-        lstm_scores = (day_err - day_err.min()) / (np.ptp(day_err) + 1e-8)
+        error_min = bundle["error_min"]
+        error_max = bundle["error_max"]
+        lstm_scores = (day_err - error_min) / (error_max - error_min + 1e-8)
         fused = (if_scores + lstm_scores) / 2
     else:
         lstm_scores = np.zeros(len(df))

@@ -59,7 +59,9 @@ def train_ticker(ticker: str, df: pd.DataFrame) -> dict:
     # decision_function: negative = more anomalous, positive = more normal
     # We flip and normalise to 0-1 so higher = more suspicious
     raw_scores = model.decision_function(X_scaled)
-    anomaly_scores = 1 - (raw_scores - raw_scores.min()) / (np.ptp(raw_scores) + 1e-8)
+    score_min = raw_scores.min()
+    score_max = raw_scores.max()
+    anomaly_scores = 1 - (raw_scores - score_min) / (score_max - score_min + 1e-8)
     predictions = model.predict(X_scaled)   # -1 = anomaly, +1 = normal
 
     n_flagged = (predictions == -1).sum()
@@ -67,6 +69,8 @@ def train_ticker(ticker: str, df: pd.DataFrame) -> dict:
         "model":         model,
         "scaler":        scaler,
         "feature_cols":  FEATURE_COLS,
+        "score_min":     score_min,
+        "score_max":     score_max,
         "anomaly_scores": anomaly_scores,
         "predictions":   predictions,
         "dates":         df.index,

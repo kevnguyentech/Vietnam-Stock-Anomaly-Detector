@@ -129,13 +129,17 @@ def train_ticker(ticker: str, df: pd.DataFrame):
 
     # Threshold: top percentile of reconstruction errors = anomaly
     threshold    = np.percentile(day_errors, LSTM_THRESHOLD_PERCENTILE)
-    lstm_scores  = (day_errors - day_errors.min()) / (np.ptp(day_errors) + 1e-8)
+    error_min    = day_errors.min()
+    error_max    = day_errors.max()
+    lstm_scores  = (day_errors - error_min) / (error_max - error_min + 1e-8)
     lstm_flags   = (day_errors > threshold).astype(int)
 
     return {
         "model":        model.state_dict(),
         "scaler":       scaler,
         "threshold":    threshold,
+        "error_min":    error_min,
+        "error_max":    error_max,
         "feature_cols": FEATURE_COLS,
         "lstm_scores":  lstm_scores,
         "lstm_flags":   lstm_flags,
@@ -178,6 +182,8 @@ def main():
             "model_state": result["model"],
             "scaler":      result["scaler"],
             "threshold":   result["threshold"],
+            "error_min":   result["error_min"],
+            "error_max":   result["error_max"],
             "feature_cols": FEATURE_COLS,
         }, MODELS_DIR / f"lstm_{ticker}.pkl")
 
