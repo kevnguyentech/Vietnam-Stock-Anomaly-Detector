@@ -55,7 +55,7 @@ multi-day patterns - a gradual volume build-up before a pump, or abnormal
 autocorrelation across days that IF can't see.
 
 The final score is a simple 0-1 average of both. Days above the threshold
-(default 0.7) are flagged.
+(default 0.45) are flagged.
 
 ---
 
