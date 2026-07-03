@@ -51,7 +51,7 @@ Best at: sudden single-day spikes in price or volume.
 **LSTM Autoencoder** sees sequences of 20 trading days. It learns to
 compress and reconstruct normal 20-day patterns. When it can't reconstruct
 a sequence well (high MSE), that sequence is anomalous. Best at: subtle
-multi-day patterns — a gradual volume build-up before a pump, or abnormal
+multi-day patterns - a gradual volume build-up before a pump, or abnormal
 autocorrelation across days that IF can't see.
 
 The final score is a simple 0-1 average of both. Days above the threshold
