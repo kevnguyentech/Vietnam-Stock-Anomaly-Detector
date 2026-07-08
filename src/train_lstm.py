@@ -30,6 +30,7 @@ Run:
     python src/train_lstm.py
 """
 import sys
+from unittest import result
 import numpy as np
 import pandas as pd
 import torch
@@ -170,8 +171,10 @@ def main():
             df_scored["if_score"] = 0.0
             df_scored["if_flag"]  = 0
 
-        df_scored["lstm_score"] = result["lstm_scores"]
-        df_scored["lstm_flag"]  = result["lstm_flags"]
+        lstm_score_series = pd.Series(result["lstm_scores"], index=df.index, name="lstm_score")
+        lstm_flag_series  = pd.Series(result["lstm_flags"],  index=df.index, name="lstm_flag")
+        df_scored["lstm_score"] = lstm_score_series
+        df_scored["lstm_flag"]  = lstm_flag_series
 
         # Fused score: average of IF + LSTM anomaly scores
         df_scored["fused_score"] = (df_scored["if_score"] + df_scored["lstm_score"]) / 2
