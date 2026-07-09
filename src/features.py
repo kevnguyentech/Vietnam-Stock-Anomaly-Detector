@@ -56,8 +56,8 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
 
     # ── price-volume divergence ────────────────────────────────────────
     # Positive: price and volume move in the same direction (healthy trend)
-    # Negative/zero: price up but volume flat — potential manipulation signal
-    df["pv_divergence"] = df["return_1d"] * np.log1p(df["rel_vol_5"])
+    # Negative: price up but volume below average — potential manipulation signal
+    df["pv_divergence"] = df["return_1d"] * np.log(df["rel_vol_5"].clip(lower=1e-8))
 
     # ── return magnitude (unsigned) ────────────────────────────────────
     df["abs_return"] = df["return_1d"].abs()
