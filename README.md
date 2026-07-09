@@ -115,7 +115,7 @@ the raw numbers look extreme in HPG's context. Per-ticker training means
 ## Project structure
 
 ```
-stock-anomaly-detector/
+Vietnam-Stock-Anomaly-Detector/
 ├── src/
 │   ├── config.py                  # all hyperparameters in one place
 │   ├── fetch_data.py              # real Yahoo Finance download
