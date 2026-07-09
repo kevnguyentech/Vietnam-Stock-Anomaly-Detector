@@ -3,15 +3,15 @@ ANOMALY DETECTION RECALL REPORT
 
 Ticker: HPG_VN
   Injected anomalies : 5
-  Flagged days total : 4
-  Hits               : 1
-  Recall             : 20.0%
-  Found              : 2023-04-18
-  Missed             : 2021-12-13, 2022-02-01, 2023-01-03, 2023-07-14
+  Flagged days total : 9
+  Hits               : 4
+  Recall             : 80.0%
+  Found              : 2021-12-13, 2022-02-01, 2023-01-03, 2023-04-18
+  Missed             : 2023-07-14
 
 Ticker: MWG_VN
   Injected anomalies : 5
-  Flagged days total : 7
+  Flagged days total : 4
   Hits               : 2
   Recall             : 40.0%
   Found              : 2021-07-07, 2023-02-10
@@ -19,7 +19,7 @@ Ticker: MWG_VN
 
 Ticker: VHM_VN
   Injected anomalies : 5
-  Flagged days total : 5
+  Flagged days total : 4
   Hits               : 2
   Recall             : 40.0%
   Found              : 2022-12-16, 2023-07-21
@@ -35,10 +35,10 @@ Ticker: VIC_VN
 
 Ticker: VNM_VN
   Injected anomalies : 5
-  Flagged days total : 6
-  Hits               : 3
-  Recall             : 60.0%
-  Found              : 2022-10-12, 2022-12-05, 2023-03-08
-  Missed             : 2023-02-08, 2023-11-24
+  Flagged days total : 2
+  Hits               : 1
+  Recall             : 20.0%
+  Found              : 2023-03-08
+  Missed             : 2022-10-12, 2022-12-05, 2023-02-08, 2023-11-24
 
-Average recall across 5 tickers: 40.0%
+Average recall across 5 tickers: 44.0%
