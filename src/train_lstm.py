@@ -166,6 +166,8 @@ def main():
         if scored_path.exists():
             df_scored = pd.read_csv(scored_path, index_col="date", parse_dates=True)
         else:
+            print(f"  WARNING: {scored_path.name} not found — IF scores missing. "
+                  f"Run train_isolation_forest.py first for a proper fused score.")
             df_scored = df.copy()
             df_scored["if_score"] = 0.0
             df_scored["if_flag"]  = 0
