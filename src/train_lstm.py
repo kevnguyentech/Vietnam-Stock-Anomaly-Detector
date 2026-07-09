@@ -30,7 +30,6 @@ Run:
     python src/train_lstm.py
 """
 import sys
-from unittest import result
 import numpy as np
 import pandas as pd
 import torch
