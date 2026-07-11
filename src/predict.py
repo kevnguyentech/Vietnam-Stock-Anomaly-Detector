@@ -59,7 +59,11 @@ def load_lstm_model(ticker: str):
     if not path.exists():
         return None
     bundle = joblib.load(path)
-    model = LSTMAutoencoder(len(FEATURE_COLS), LSTM_HIDDEN, LSTM_LAYERS)
+    model = LSTMAutoencoder(
+        len(bundle["feature_cols"]),
+        bundle["lstm_hidden"],
+        bundle["lstm_layers"],
+    )
     model.load_state_dict(bundle["model_state"])
     model.eval()
     return bundle, model

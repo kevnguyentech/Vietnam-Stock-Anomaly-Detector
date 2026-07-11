@@ -189,6 +189,8 @@ def main():
             "error_min":   result["error_min"],
             "error_max":   result["error_max"],
             "feature_cols": FEATURE_COLS,
+            "lstm_hidden":  LSTM_HIDDEN,
+            "lstm_layers":  LSTM_LAYERS,
         }, MODELS_DIR / f"lstm_{ticker}.pkl")
 
         n_flagged = int(result["lstm_flags"].sum())
