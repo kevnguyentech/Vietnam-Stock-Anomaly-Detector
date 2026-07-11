@@ -92,21 +92,27 @@ def score_dataframe(df: pd.DataFrame, ticker: str) -> pd.DataFrame:
         seqs   = np.array([X_lstm[i: i + LSTM_SEQ_LEN]
                            for i in range(n - LSTM_SEQ_LEN + 1)],
                           dtype=np.float32)
-        with torch.no_grad():
-            recon = model(torch.from_numpy(seqs)).numpy()
-        err_per_seq = np.mean((seqs - recon) ** 2, axis=(1, 2))
+        if len(seqs) == 0:
+            print(f"  Warning: only {n} rows in window; LSTM needs "
+                  f">= {LSTM_SEQ_LEN}. Falling back to IF-only scoring.")
+            lstm_scores = np.zeros(n)
+            fused = if_scores
+        else:
+            with torch.no_grad():
+                recon = model(torch.from_numpy(seqs)).numpy()
+            err_per_seq = np.mean((seqs - recon) ** 2, axis=(1, 2))
 
-        day_err   = np.zeros(n)
-        day_count = np.zeros(n)
-        for i, e in enumerate(err_per_seq):
-            day_err[i: i + LSTM_SEQ_LEN]   += e
-            day_count[i: i + LSTM_SEQ_LEN] += 1
-        day_count = np.maximum(day_count, 1)
-        day_err  /= day_count
-        error_min = bundle["error_min"]
-        error_max = bundle["error_max"]
-        lstm_scores = ((day_err - error_min) / (error_max - error_min + 1e-8)).clip(0.0, 1.0)
-        fused = (if_scores + lstm_scores) / 2
+            day_err   = np.zeros(n)
+            day_count = np.zeros(n)
+            for i, e in enumerate(err_per_seq):
+                day_err[i: i + LSTM_SEQ_LEN]   += e
+                day_count[i: i + LSTM_SEQ_LEN] += 1
+            day_count = np.maximum(day_count, 1)
+            day_err  /= day_count
+            error_min = bundle["error_min"]
+            error_max = bundle["error_max"]
+            lstm_scores = ((day_err - error_min) / (error_max - error_min + 1e-8)).clip(0.0, 1.0)
+            fused = (if_scores + lstm_scores) / 2
     else:
         lstm_scores = np.zeros(len(df))
         fused = if_scores
