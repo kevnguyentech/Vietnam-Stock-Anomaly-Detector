@@ -99,17 +99,16 @@ def threshold_sweep(scored_csvs: list) -> pd.DataFrame:
         for csv_path in scored_csvs:
             ticker = csv_path.stem.replace("_scored", "")
             df = pd.read_csv(csv_path, index_col="date", parse_dates=True)
+            flagged_dates = df.index[df["fused_score"] >= t].strftime("%Y-%m-%d").tolist()
+            total_flagged += len(flagged_dates)
+            total_days += len(df)
             anom_csv = DATA_RAW / f"{ticker}_anomalies.csv"
             if not anom_csv.exists():
                 continue
             ground_truth = pd.read_csv(anom_csv)["date"].tolist()
-            flagged_dates = df.index[df["fused_score"] >= t].strftime("%Y-%m-%d").tolist()
             hits = [d for d in ground_truth if d in flagged_dates]
-
             total_hits += len(hits)
             total_injected += len(ground_truth)
-            total_flagged += len(flagged_dates)
-            total_days += len(df)
 
         rows.append({
             "threshold": round(t, 2),
@@ -167,12 +166,16 @@ def main():
     print("\nNext: python src/predict.py --ticker VNM_VN")
 
     sweep_df = threshold_sweep(scored_csvs)
-    print(f"\n{'='*50}")
-    print("THRESHOLD SWEEP (recall vs. false-alarm tradeoff)")
-    print(f"{'='*50}")
-    print(sweep_df.to_string(index=False))
-    sweep_df.to_csv(OUTPUTS_DIR / "threshold_sweep.csv", index=False)
-    print(f"\nSaved -> {OUTPUTS_DIR / 'threshold_sweep.csv'}")
+    if sweep_df["injected"].sum() == 0:
+        print("\nNote: no ground-truth anomaly files found — "
+              "threshold sweep requires simulated data from simulate_data.py.")
+    else:
+        print(f"\n{'='*50}")
+        print("THRESHOLD SWEEP (recall vs. false-alarm tradeoff)")
+        print(f"{'='*50}")
+        print(sweep_df.to_string(index=False))
+        sweep_df.to_csv(OUTPUTS_DIR / "threshold_sweep.csv", index=False)
+        print(f"\nSaved -> {OUTPUTS_DIR / 'threshold_sweep.csv'}")
 
 if __name__ == "__main__":
     main()
