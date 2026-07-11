@@ -24,12 +24,11 @@ import joblib
 import torch
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
-from sklearn.preprocessing import StandardScaler
 
 from config import (
     DATA_PROCESSED, DATA_RAW, MODELS_DIR,
-    LSTM_SEQ_LEN, LSTM_HIDDEN, LSTM_LAYERS,
-    ALERT_THRESHOLD, RANDOM_SEED,
+    LSTM_SEQ_LEN,
+    ALERT_THRESHOLD,
 )
 from features import add_features, FEATURE_COLS
 from train_lstm import LSTMAutoencoder
