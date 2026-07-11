@@ -14,6 +14,7 @@ anomaly chart becomes your primary tool instead.
 Run:
     python src/evaluate.py
 """
+from __future__ import annotations
 import sys
 import numpy as np
 import pandas as pd

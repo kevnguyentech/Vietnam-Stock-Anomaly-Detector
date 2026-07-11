@@ -16,6 +16,7 @@ information available at the close of trading day t. No lookahead.
 Run:
     python src/features.py
 """
+from __future__ import annotations
 import sys
 import numpy as np
 import pandas as pd
