@@ -16,6 +16,7 @@ The simulation is not random noise. Each stock has:
 Run:
     python src/simulate_data.py
 """
+from __future__ import annotations
 import argparse
 import numpy as np
 import pandas as pd
