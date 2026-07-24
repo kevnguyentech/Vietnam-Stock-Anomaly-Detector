@@ -102,19 +102,3 @@ def test_feature_cols_all_present():
     missing = [c for c in FEATURE_COLS if c not in result.columns]
     assert missing == [], f"Missing feature columns: {missing}"
 
-
-def test_no_lookahead_in_close_ma():
-    """
-    close_ma_5 on the last day must reflect the prior 5 closes, not the current one.
-    """
-    df = _make_flat_df(n=60)
-    df.iloc[-1, df.columns.get_loc("close")] = 9999.0  # spike close
-
-    result = add_features(df)
-    # close_ma_5 on spike day should be ~100.0 (prior 5 flat closes), not pulled toward 9999
-    last_close_ma = result["close_ma_5"].iloc[-1]
-
-    assert last_close_ma == pytest.approx(100.0, abs=0.01), (
-        f"close_ma_5 on spike day = {last_close_ma:.2f}, expected ~100.0. "
-        "close_ma may be including current day's close in the rolling mean."
-    )

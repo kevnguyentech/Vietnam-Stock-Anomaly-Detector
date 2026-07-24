@@ -51,7 +51,6 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     for w in WINDOWS:
         df[f"vol_ma_{w}"]     = df["volume"].shift(1).rolling(w).mean()
         df[f"rel_vol_{w}"]    = df["volume"] / df[f"vol_ma_{w}"]
-        df[f"close_ma_{w}"]   = df["close"].shift(1).rolling(w).mean()
         df[f"return_std_{w}"] = df["log_return_1d"].shift(1).rolling(w).std()
         df[f"return_z_{w}"]   = df["log_return_1d"] / (df[f"return_std_{w}"] + 1e-8)
 
