@@ -135,7 +135,7 @@ def train_ticker(ticker: str, df: pd.DataFrame):
     lstm_flags   = (day_errors > threshold).astype(int)
 
     return {
-        "model":        model.state_dict(),
+        "model":        {k: v.cpu() for k, v in model.state_dict().items()},
         "scaler":       scaler,
         "threshold":    threshold,
         "error_min":    error_min,
